@@ -1,62 +1,79 @@
 # WE GO JIM - Frontend
 
-A modern workout tracking application built with React, Tailwind CSS, and Vite.
+<div align="center">
+
+`⚛️ React` `⚡ Vite` `🎨 Tailwind` `🔐 JWT` `📱 Responsive`
+
+A modern workout tracking application built with React and Tailwind CSS.
+</div>
+
+## Tech Stack 
+
+```javascript
+// Frontend Core
+⚛️ React 18 with Vite
+🎨 Tailwind CSS
+🔄 React Router DOM v6
+📡 Axios
+
+// State Management
+🔄 React Context API
+🎣 Custom Hooks
+
+// UI Components
+🎯 Lucide React Icons
+🌗 Dark/Light Theme
+📱 Responsive Design
+```
 
 ## Features
 
-- User Authentication (JWT)
-- Workout Schedule Management
-- Dark/Light Theme
-- Responsive Design
+```javascript
+// Core Features
+🔐 User Authentication (JWT)
+📅 Workout Schedule Management
+🎯 Exercise Tracking
+📊 Progress Analytics
 
-## Tech Stack
+// UI/UX
+🌗 Dark/Light Theme Toggle
+📱 Mobile Responsive
+🎨 Modern UI Components
+```
 
-- React (Vite)
-- Tailwind CSS
-- React Router DOM
-- Lucide React
-- Axios
+## Quick Start
 
-## Getting Started
-
-1. Clone repository:
 ```bash
+# Clone repository
 git clone https://github.com/mehara-rothila/we-go-jim-front.git
+
+# Install dependencies
 cd we-go-jim-front
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
 
-3. Create `.env`:
-```
-VITE_API_URL=http://localhost:5000/api
-```
-
-4. Start development server:
-```bash
+# Start development server
 npm run dev
 ```
 
 ## Project Structure
 
-```
+```javascript
 src/
-├── components/
-│   ├── layout/
-│   └── workouts/
-├── pages/
-├── context/
-├── hooks/
-├── services/
-└── App.jsx
+├── components/          // Reusable UI components
+│   ├── layout/         // Layout components
+│   └── workouts/       // Workout-related components
+├── pages/              // Route pages
+├── context/            // Global state
+├── hooks/              // Custom hooks
+├── services/           // API services
+└── App.jsx             // Root component
 ```
 
-## Available Scripts
+## Scripts
 
-- `npm run dev`: Start development server
-- `npm run build`: Build for production
-- `npm run preview`: Preview production build
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+```
 
