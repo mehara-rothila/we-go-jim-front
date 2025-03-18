@@ -24,14 +24,20 @@ frontend/
 │   │   │   └── Sidebar.jsx        # Side navigation menu
 │   │   ├── store/slices/
 │   │   │   └── workoutSlice.js    # State management for workouts
-│   │   └── workouts/
-│   │       └── EditScheduleModal.jsx  # Modal for editing schedules
+│   │   ├── workouts/
+│   │   │   └── EditScheduleModal.jsx  # Modal for editing schedules
+│   │   └── stats/
+│   │       ├── WeeklyPerformanceChart.jsx  # Weekly stats chart
+│   │       ├── MonthlyPerformanceChart.jsx # Monthly stats chart
+│   │       └── MetricCard.jsx              # Metric display card
 │   ├── context/
 │   │   ├── AuthContext.jsx        # Authentication context provider
 │   │   └── ThemeContext.jsx       # Theme context provider
 │   ├── data/
 │   │   └── workoutData.js         # Static workout data
-│   ├── hooks/                     # Application-wide custom hooks
+│   ├── hooks/
+│   │   ├── useSchedules.js        # Hook for schedule management
+│   │   └── useExercises.js        # Hook for exercise library management
 │   ├── pages/
 │   │   ├── Dashboard.jsx          # Dashboard page
 │   │   ├── Exercises.jsx          # Exercise library page
@@ -102,6 +108,17 @@ Centralizes workout schedule management:
 const { schedules, loading, error, fetchSchedules, addSchedule } = useSchedules();
 ```
 
+### useExercises
+Manages exercise library functionality:
+- Fetching exercises from the database
+- Filtering and searching exercises
+- Adding custom exercises
+
+```javascript
+// Usage
+const { exercises, loading, error, searchExercises } = useExercises();
+```
+
 ## Components
 
 ### Layout Components
@@ -112,6 +129,11 @@ const { schedules, loading, error, fetchSchedules, addSchedule } = useSchedules(
 ### Workout Components
 - **EditScheduleModal**: Modal for editing workout schedules
   - Allows editing days, exercises, sets and reps
+
+### Stats Components
+- **WeeklyPerformanceChart**: Visualizes weekly workout data
+- **MonthlyPerformanceChart**: Visualizes monthly performance trends
+- **MetricCard**: Displays individual performance metrics with change indicators
 
 ### Common Components
 - **LoadingScreen**: Loading indicator for async operations
@@ -131,9 +153,33 @@ const { schedules, loading, error, fetchSchedules, addSchedule } = useSchedules(
   - Create, read, update, delete schedules
   - Search through schedules
 - **Exercises**: Browse exercise library
-  - Filter exercises by category and equipment
-- **Stats**: View detailed workout statistics (in development)
+  - Filter exercises by category, equipment, and difficulty
+  - Search for specific exercises
+  - View exercise details
+  - Add custom exercises to library
+- **Stats**: View detailed workout statistics
+  - Weekly and monthly performance visualization
+  - Comprehensive performance metrics
 - **Profile**: User profile management (in development)
+
+## Key Features
+
+### Dynamic Exercise Library
+- Automatically populated with default exercises
+- Categorized by muscle groups
+- Filtered by equipment type and difficulty level
+- Searchable by exercise name
+
+### Performance Analytics Dashboard
+- Real-time workout statistics
+- Muscle group distribution visualization
+- Recent workout activity tracking
+- Progress indicators with percentage changes
+
+### Dark/Light Theme Toggle
+- Persistent theme preference
+- Comprehensive styling across all components
+- Optimized for readability in both modes
 
 ## Authentication Flow (Frontend Implementation)
 
@@ -247,13 +293,12 @@ npm update
 
 ## Future Development Features
 
-1. **Exercise Database**: Comprehensive exercise library with instructions
-2. **Progress Tracking**: Visual charts showing progress over time
-3. **Workout Timer**: Integrated timer for tracking workout duration
-4. **Personal Records**: Track personal bests for exercises
-5. **Nutrition Tracking**: Basic calorie and macronutrient tracking
-6. **Social Features**: Share workouts and achievements
-7. **Mobile App**: Native mobile experience
+1. **Progress Tracking**: Visual charts showing progress over time
+2. **Workout Timer**: Integrated timer for tracking workout duration
+3. **Personal Records**: Track personal bests for exercises
+4. **Nutrition Tracking**: Basic calorie and macronutrient tracking
+5. **Social Features**: Share workouts and achievements
+6. **Mobile App**: Native mobile experience
 
 ---
 
@@ -262,4 +307,4 @@ This project is proprietary and confidential. Unauthorized copying, distribution
 
 ---
 
-*Documentation last updated: March 17, 2025*
+*Documentation last updated: March 18, 2025*
