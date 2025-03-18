@@ -1,6 +1,6 @@
 // src/pages/Workouts.jsx
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Loader, Trash, Edit2, Calendar } from 'lucide-react';
+import { Search, Filter, Plus, Loader, Trash, Edit2, Calendar, Scale } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useSchedules } from '../hooks/useSchedules';
 import EditScheduleModal from '../components/workouts/EditScheduleModal';
@@ -12,6 +12,27 @@ const Workouts = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [editingSchedule, setEditingSchedule] = useState(null);
     const [editingName, setEditingName] = useState(null);
+    
+    // Weight unit state
+    const [weightUnit, setWeightUnit] = useState(() => {
+        return localStorage.getItem('weightUnit') || 'kg';
+    });
+
+    // Function to toggle between kg and lbs
+    const toggleWeightUnit = () => {
+        const newUnit = weightUnit === 'kg' ? 'lbs' : 'kg';
+        localStorage.setItem('weightUnit', newUnit);
+        setWeightUnit(newUnit);
+    };
+
+    // Function to convert weight based on selected unit
+    const convertWeight = (weight) => {
+        if (weightUnit === 'lbs') {
+            // Convert kg to lbs (1 kg ≈ 2.20462 lbs)
+            return (weight * 2.20462).toFixed(1);
+        }
+        return weight;
+    };
 
     const handleAddSchedule = async () => {
         try {
@@ -156,7 +177,7 @@ const Workouts = () => {
                     </div>
                 )}
 
-                {/* Search Bar */}
+                {/* Search Bar and Weight Unit Toggle */}
                 <div className="flex gap-4 mb-6">
                     <div className="relative flex-1">
                         <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${
@@ -174,6 +195,20 @@ const Workouts = () => {
                             }`}
                         />
                     </div>
+                    
+                    {/* Weight Unit Toggle Button */}
+                    <button
+                        onClick={toggleWeightUnit}
+                        className={`px-4 py-3 rounded-xl font-medium flex items-center gap-2 
+                            transition-all duration-200 ${
+                            theme === 'dark' 
+                                ? 'bg-dark-card border border-dark-border text-text-light hover:bg-dark-darker' 
+                                : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'
+                        }`}
+                    >
+                        <Scale className="w-4 h-4" />
+                        <span>{weightUnit.toUpperCase()}</span>
+                    </button>
                 </div>
 
                 {/* Schedule Grid */}
@@ -287,7 +322,7 @@ const Workouts = () => {
                                                                     }`}
                                                                 >
                                                                     Set {set.setNumber}: {set.reps} reps
-                                                                    {set.weight > 0 && ` × ${set.weight} kg`}
+                                                                    {set.weight > 0 && ` × ${convertWeight(set.weight)} ${weightUnit}`}
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -357,14 +392,16 @@ const Workouts = () => {
                 )}
             </div>
 
-            {/* Edit Schedule Modal */}
-            {editingSchedule && (
-                <EditScheduleModal
-                    schedule={editingSchedule}
-                    onClose={() => setEditingSchedule(null)}
-                    onSave={handleSaveEdit}
-                />
-            )}
+           {/* Edit Schedule Modal */}
+{editingSchedule && (
+    <EditScheduleModal
+        schedule={editingSchedule}
+        onClose={() => setEditingSchedule(null)}
+        onSave={handleSaveEdit}
+        weightUnit={weightUnit}
+        convertWeight={convertWeight}
+    />
+)}
         </div>
     );
 };

@@ -3,9 +3,27 @@ import React, { useState } from 'react';
 import { X, Plus, Trash } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
-const EditScheduleModal = ({ schedule, onClose, onSave }) => {
+const EditScheduleModal = ({ schedule, onClose, onSave, weightUnit = 'kg', convertWeight }) => {
     const { isDark } = useTheme();
     const [editedSchedule, setEditedSchedule] = useState(JSON.parse(JSON.stringify(schedule)));
+
+    // Convert display weight to storage weight (kg)
+    const convertToStorageUnit = (displayWeight) => {
+        if (weightUnit === 'lbs') {
+            // Convert lbs back to kg (1 lbs ≈ 0.453592 kg)
+            return (displayWeight * 0.453592).toFixed(1);
+        }
+        return displayWeight;
+    };
+
+    // If no convertWeight function is provided, create a default one
+    const displayWeight = convertWeight || ((weight) => {
+        if (weightUnit === 'lbs') {
+            // Convert kg to lbs (1 kg ≈ 2.20462 lbs)
+            return (weight * 2.20462).toFixed(1);
+        }
+        return weight;
+    });
 
     const handleSave = () => {
         onSave(editedSchedule);
@@ -55,9 +73,18 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
 
     const updateSetDetails = (workoutIndex, exerciseIndex, setIndex, field, value) => {
         const workouts = [...editedSchedule.workouts];
-        workouts[workoutIndex].exercises[exerciseIndex].sets[setIndex][field] = field === 'setNumber' 
-            ? parseInt(value) 
-            : parseInt(value) || 0;
+        
+        // Handle weight conversions if needed
+        if (field === 'weight' && weightUnit === 'lbs') {
+            // Convert from display value (lbs) to storage value (kg)
+            workouts[workoutIndex].exercises[exerciseIndex].sets[setIndex][field] = 
+                value ? parseFloat(convertToStorageUnit(value)) : 0;
+        } else {
+            workouts[workoutIndex].exercises[exerciseIndex].sets[setIndex][field] = field === 'setNumber' 
+                ? parseInt(value) 
+                : parseInt(value) || 0;
+        }
+        
         setEditedSchedule({ ...editedSchedule, workouts });
     };
 
@@ -118,7 +145,7 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                                     }`}>Reps</div>
                                     <div className={`col-span-4 text-sm font-medium ${
                                         isDark ? 'text-gray-400' : 'text-gray-600'
-                                    }`}>Weight (kg)</div>
+                                    }`}>Weight ({weightUnit})</div>
                                     <div className="col-span-1"></div>
                                 </div>
 
@@ -154,7 +181,8 @@ const EditScheduleModal = ({ schedule, onClose, onSave }) => {
                                             <input
                                                 type="number"
                                                 min="0"
-                                                value={set.weight || 0}
+                                                // Display weight in user's preferred unit
+                                                value={weightUnit === 'lbs' ? displayWeight(set.weight || 0) : (set.weight || 0)}
                                                 onChange={(e) => updateSetDetails(workoutIndex, exerciseIndex, setIndex, 'weight', e.target.value)}
                                                 className={`w-full px-3 py-2 rounded-lg text-sm ${
                                                     isDark 
