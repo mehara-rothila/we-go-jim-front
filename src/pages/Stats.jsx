@@ -8,7 +8,8 @@ import {
   Activity, 
   Clock,
   ArrowLeft, 
-  ArrowRight
+  ArrowRight,
+  Loader
 } from 'lucide-react';
 import { 
   getWeeklySummary, 
@@ -33,54 +34,19 @@ const Stats = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         
-        // For demo purposes, we'll use mock data
-        // In a real app, you would uncomment these lines to fetch from the API
-        // const weeklyResponse = await getWeeklySummary();
-        // const monthlyResponse = await getMonthlySummary();
-        // const metricsResponse = await getPerformanceMetrics();
+        // Fetch data from API endpoints
+        const weeklyResponse = await getWeeklySummary();
+        const monthlyResponse = await getMonthlySummary();
+        const metricsResponse = await getPerformanceMetrics();
 
-        // Mock weekly data
-        const mockWeeklyData = [
-          { day: 'Monday', totalVolume: 2450, totalSets: 18, avgWeight: 75 },
-          { day: 'Tuesday', totalVolume: 0, totalSets: 0, avgWeight: 0 },
-          { day: 'Wednesday', totalVolume: 3100, totalSets: 24, avgWeight: 82 },
-          { day: 'Thursday', totalVolume: 0, totalSets: 0, avgWeight: 0 },
-          { day: 'Friday', totalVolume: 2800, totalSets: 20, avgWeight: 78 },
-          { day: 'Saturday', totalVolume: 3500, totalSets: 28, avgWeight: 85 },
-          { day: 'Sunday', totalVolume: 0, totalSets: 0, avgWeight: 0 },
-        ];
-
-        // Mock monthly data
-        const mockMonthlyData = [
-          { week: 'Week 1', totalVolume: 8250, workoutCount: 3, averageIntensity: 75 },
-          { week: 'Week 2', totalVolume: 10500, workoutCount: 4, averageIntensity: 80 },
-          { week: 'Week 3', totalVolume: 9350, workoutCount: 3, averageIntensity: 85 },
-          { week: 'Week 4', totalVolume: 11850, workoutCount: 4, averageIntensity: 82 },
-        ];
-
-        // Mock metrics
-        const mockMetrics = {
-          totalWorkouts: 14,
-          workoutChange: '+2',
-          totalVolume: '39,950 kg',
-          volumeChange: '+8.5%',
-          avgWorkoutDuration: '65 min',
-          durationChange: '+5 min',
-          weeklyFrequency: '3.5',
-          frequencyChange: '+0.5',
-          avgIntensity: '81%',
-          intensityChange: '+3%',
-          personalRecords: 8,
-          recordsChange: '+3'
-        };
-
-        setWeeklyData(mockWeeklyData);
-        setMonthlyData(mockMonthlyData);
-        setMetrics(mockMetrics);
+        setWeeklyData(weeklyResponse.data);
+        setMonthlyData(monthlyResponse.data);
+        setMetrics(metricsResponse.data);
       } catch (err) {
-        setError('Failed to load performance data');
-        console.error(err);
+        console.error('Error fetching stats data:', err);
+        setError('Failed to load performance data. Please try again later.');
       } finally {
         setIsLoading(false);
       }
@@ -95,11 +61,11 @@ const Stats = () => {
       <button 
         onClick={() => setPeriod('previous')}
         className={`p-2 rounded-lg ${
-          isDark ? 'hover:bg-dark-card' : 'hover:bg-gray-100'
+          isDark ? 'hover:bg-[#1e293b]' : 'hover:bg-gray-100'
         }`}
       >
         <ArrowLeft className={`w-4 h-4 ${
-          isDark ? 'text-text-muted' : 'text-gray-500'
+          isDark ? 'text-[#94a3b8]' : 'text-gray-500'
         }`} />
       </button>
       <select 
@@ -107,7 +73,7 @@ const Stats = () => {
         onChange={(e) => setPeriod(e.target.value)}
         className={`px-3 py-2 rounded-lg text-sm font-medium border ${
           isDark 
-            ? 'bg-dark-darker text-white border-dark-border' 
+            ? 'bg-[#0f172a] text-white border-[#2a334a]' 
             : 'bg-gray-50 text-gray-900 border-gray-200'
         }`}
       >
@@ -117,11 +83,11 @@ const Stats = () => {
       <button 
         onClick={() => setPeriod('current')}
         className={`p-2 rounded-lg ${
-          isDark ? 'hover:bg-dark-card' : 'hover:bg-gray-100'
+          isDark ? 'hover:bg-[#1e293b]' : 'hover:bg-gray-100'
         }`}
       >
         <ArrowRight className={`w-4 h-4 ${
-          isDark ? 'text-text-muted' : 'text-gray-500'
+          isDark ? 'text-[#94a3b8]' : 'text-gray-500'
         }`} />
       </button>
     </div>
@@ -129,7 +95,7 @@ const Stats = () => {
 
   return (
     <div className={`p-8 min-h-screen ${
-      isDark ? 'bg-dark-darker' : 'bg-gray-50'
+      isDark ? 'bg-[#0f172a]' : 'bg-gray-50'
     } transition-colors duration-200`}>
       {/* Header with period selector */}
       <div className="flex justify-between items-center mb-8">
@@ -140,7 +106,7 @@ const Stats = () => {
             Performance Analytics
           </h1>
           <p className={`${
-            isDark ? 'text-text-muted' : 'text-gray-500'
+            isDark ? 'text-[#94a3b8]' : 'text-gray-500'
           }`}>
             Track your workout progress and performance metrics
           </p>
@@ -148,22 +114,30 @@ const Stats = () => {
         <PeriodSelector />
       </div>
 
-      {/* Loading and error states */}
+      {/* Loading state */}
       {isLoading && (
-        <div className="flex justify-center items-center h-64">
+        <div className="flex flex-col items-center justify-center h-64">
+          <Loader className={`w-10 h-10 animate-spin mb-4 ${
+            isDark ? 'text-blue-400' : 'text-blue-600'
+          }`} />
           <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
             Loading performance data...
           </p>
         </div>
       )}
 
+      {/* Error state */}
       {error && (
-        <div className="flex justify-center items-center h-64">
-          <p className="text-lg text-red-500">{error}</p>
+        <div className={`p-4 rounded-lg mb-6 ${
+          isDark ? 'bg-red-900/20 border border-red-800/30 text-red-400' : 'bg-red-50 border border-red-200 text-red-700'
+        }`}>
+          <p className="font-medium">{error}</p>
+          <p className="text-sm mt-1">Check your connection or try again later.</p>
         </div>
       )}
 
-      {!isLoading && !error && (
+      {/* Data display - only show when not loading and there's no error */}
+      {!isLoading && !error && weeklyData.length > 0 && monthlyData.length > 0 && Object.keys(metrics).length > 0 && (
         <>
           {/* Key metrics cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
@@ -210,9 +184,26 @@ const Stats = () => {
             <WeeklyPerformanceChart data={weeklyData} />
             <MonthlyPerformanceChart data={monthlyData} />
           </div>
-
-          {/* Future additions: Muscle group focus, exercise progress, personal records */}
         </>
+      )}
+
+      {/* Empty state - no data but no error */}
+      {!isLoading && !error && (weeklyData.length === 0 || monthlyData.length === 0 || Object.keys(metrics).length === 0) && (
+        <div className={`text-center py-16 px-4 rounded-lg ${
+          isDark ? 'bg-[#1e293b]' : 'bg-white'
+        }`}>
+          <BarChart className={`w-16 h-16 mx-auto mb-4 ${
+            isDark ? 'text-[#94a3b8]' : 'text-gray-400'
+          }`} />
+          <h3 className={`text-xl font-semibold mb-2 ${
+            isDark ? 'text-white' : 'text-gray-900'
+          }`}>No workout data available</h3>
+          <p className={`max-w-md mx-auto ${
+            isDark ? 'text-[#94a3b8]' : 'text-gray-500'
+          }`}>
+            Start tracking your workouts to see performance analytics and progress over time.
+          </p>
+        </div>
       )}
     </div>
   );

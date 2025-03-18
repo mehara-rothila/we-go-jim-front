@@ -5,11 +5,19 @@ const api = axios.create({
     baseURL: 'http://localhost:5000/api'
 });
 
-// Add token to requests if it exists
-const token = localStorage.getItem('token');
-if (token) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
+// Add interceptor to include auth token in all requests
+api.interceptors.request.use(
+    config => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
 
 // Auth endpoints
 export const login = (credentials) => api.post('/auth/login', credentials);
@@ -25,7 +33,13 @@ export const deleteSchedule = (id) => api.delete(`/schedules/${id}`);
 // Stats endpoints
 export const getWeeklySummary = () => api.get('/stats/weekly-summary');
 export const getMonthlySummary = () => api.get('/stats/monthly-summary');
-export const getYearlyProgress = () => api.get('/stats/yearly-progress');
 export const getPerformanceMetrics = () => api.get('/stats/performance-metrics');
+
+// Exercise endpoints
+export const getExercises = () => api.get('/exercises');
+export const getExercise = (id) => api.get(`/exercises/${id}`);
+export const createExercise = (exerciseData) => api.post('/exercises', exerciseData);
+export const updateExercise = (id, exerciseData) => api.put(`/exercises/${id}`, exerciseData);
+export const deleteExercise = (id) => api.delete(`/exercises/${id}`);
 
 export default api;

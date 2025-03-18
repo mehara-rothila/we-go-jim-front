@@ -1,6 +1,6 @@
 // src/hooks/useSchedules.js
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import { getSchedules, createSchedule as apiCreateSchedule } from '../services/api';
 
 export const useSchedules = () => {
     const [schedules, setSchedules] = useState([]);
@@ -10,11 +10,11 @@ export const useSchedules = () => {
     const fetchSchedules = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/schedules');
-            setSchedules(response.data || []);
             setError(null);
+            const response = await getSchedules();
+            setSchedules(response.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch schedules');
+            setError('Failed to fetch schedules. Please try again.');
             console.error('Error fetching schedules:', err);
         } finally {
             setLoading(false);
@@ -23,11 +23,12 @@ export const useSchedules = () => {
 
     const addSchedule = async (scheduleData) => {
         try {
-            const response = await api.post('/schedules', scheduleData);
+            setError(null);
+            const response = await apiCreateSchedule(scheduleData);
             await fetchSchedules();
             return response.data;
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to add schedule');
+            setError('Failed to add schedule. Please try again.');
             console.error('Error adding schedule:', err);
             throw err;
         }
