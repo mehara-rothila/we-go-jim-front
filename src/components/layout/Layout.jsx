@@ -5,16 +5,16 @@ import Sidebar from './Sidebar';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Layout({ children }) {
-  const { isDark } = useTheme();
+  const { theme } = useTheme();
   
   return (
     <div className={`min-h-screen transition-colors duration-200 ${
-      isDark ? 'bg-dark-bg' : 'bg-light-bg'
+      theme === 'dark' ? 'bg-dark-bg text-text-light' : 'bg-light-bg text-gray-800'
     }`}>
       <Navbar />
       <Sidebar />
-      <main className="p-4 sm:ml-64 pt-16">
-        <div className="p-4">
+      <main className="fixed-main-content">
+        <div className="p-6 transition-colors duration-200">
           {children}
         </div>
       </main>

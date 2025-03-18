@@ -2,15 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base Styles */
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  }
+  
+  html::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  html::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+    border: transparent;
+  }
+
   body {
     @apply antialiased text-gray-800 bg-gray-50;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  
+  #root {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    min-height: 100vh;
   }
 }
 
+/* Component Styles */
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium;
+    @apply px-4 py-2 bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition-colors font-medium;
   }
   
   .btn-secondary {
@@ -22,12 +56,179 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white;
+    @apply w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white;
+  }
+  
+  /* Layout Fixed Components */
+  .fixed-navbar {
+    @apply fixed top-0 left-0 right-0 h-16 border-b z-50 transition-colors duration-200;
+    min-height: 64px;
+    max-height: 64px;
+  }
+  
+  .fixed-sidebar {
+    @apply fixed top-16 left-0 bottom-0 border-r z-40 transition-colors duration-200 hidden sm:block;
+    width: 256px;
+    min-width: 256px;
+    max-width: 256px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .main-content {
+    @apply pt-16 transition-all duration-200;
+    width: 100%;
+  }
+  
+  /* Responsive Layout Adjustments */
+  @media (min-width: 640px) {
+    .main-content {
+      margin-left: 256px;
+      width: calc(100% - 256px);
+    }
+  }
+  
+  /* Card Styles */
+  .stat-card {
+    @apply rounded-xl p-5 transition-all duration-200 hover:shadow-md border;
+  }
+  
+  .exercise-card {
+    @apply rounded-xl border transition-all duration-200 hover:shadow-md;
+  }
+  
+  .workout-card {
+    @apply rounded-xl overflow-hidden transition-all duration-200 hover:shadow-lg group border;
+  }
+  
+  /* Form Controls */
+  .search-input {
+    @apply w-full pl-10 pr-4 py-3 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 border;
+  }
+  
+  .dropdown-select {
+    @apply pl-4 pr-8 py-3 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 border;
+  }
+  
+  /* Button Styles */
+  .icon-button {
+    @apply p-2 rounded-full transition-colors duration-200;
+  }
+  
+  .action-button {
+    @apply flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm;
+  }
+  
+  /* Header Section */
+  .page-header {
+    @apply relative rounded-xl mb-8 overflow-hidden border;
+  }
+  
+  .header-content {
+    @apply relative p-6 z-10;
+  }
+  
+  /* Difficulty Badges */
+  .difficulty-badge-advanced {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .difficulty-badge-intermediate {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .difficulty-badge-beginner {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+  }
+  
+  /* Navigation Item */
+  .nav-item {
+    @apply flex items-center px-4 py-3 my-1 text-sm font-medium rounded-xl transition-all duration-200;
+    height: 46px;
+  }
+  
+  .nav-item-active {
+    @apply border;
   }
 }
 
-@layer base {
-    html {
-      scroll-behavior: smooth;
-    }
+/* Utility Classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .grid-pattern {
+    background-size: 20px 20px;
+    background-image: 
+      linear-gradient(to right, rgba(128, 128, 128, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
+  }
+}
+
+/* Add these specific fixes to your index.css file */
+
+/* Fixed Layout Components */
+.fixed-navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  z-index: 50 !important;
+  width: 100% !important;
+}
+
+.fixed-sidebar {
+  position: fixed !important;
+  top: 64px !important; /* Exact navbar height */
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 256px !important;
+  min-width: 256px !important;
+  max-width: 256px !important;
+  z-index: 40 !important;
+  overflow-y: auto !important;
+}
+
+.fixed-main-content {
+  padding-top: 64px !important; /* Exact navbar height */
+  padding-left: 0 !important;
+  transition: all 0.2s !important;
+}
+
+@media (min-width: 640px) {
+  .fixed-main-content {
+    margin-left: 256px !important; /* Exact sidebar width */
+    width: calc(100% - 256px) !important;
+  }
+}
+
+/* Override any zoom behaviors */
+@media screen and (min-width: 640px) {
+  html {
+    zoom: reset !important;
+  }
+  
+  body {
+    text-size-adjust: none !important;
+    -webkit-text-size-adjust: none !important;
+  }
+}
+
+/* Ensure all fixed elements maintain their size */
+header, aside {
+  zoom: reset !important;
+  transform: none !important;
+}

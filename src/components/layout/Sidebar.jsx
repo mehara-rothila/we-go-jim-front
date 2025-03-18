@@ -1,12 +1,14 @@
 // src/components/layout/Sidebar.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Dumbbell, Library, LineChart, User } from 'lucide-react';
+import { Home, Dumbbell, Library, LineChart, User, LogOut } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = () => {
   const location = useLocation();
-  const { isDark } = useTheme();
+  const { theme } = useTheme();
+  const { logout } = useAuth();
   
   const navigation = [
     { name: 'Dashboard', icon: Home, path: '/' },
@@ -16,41 +18,74 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-light-card dark:bg-dark-darker border-r border-light-border dark:border-dark-border transition-colors duration-200">
-      <nav className="mt-20 px-3">
-        {navigation.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`flex items-center px-3 py-2.5 my-1 text-sm font-medium rounded-lg transition-all ${
-                isActive 
-                  ? 'bg-dark-darker dark:bg-black text-text-light'
-                  : 'text-gray-600 dark:text-text-muted hover:bg-light-card dark:hover:bg-dark-card'
+    <aside className={`fixed-sidebar transition-colors duration-200 border-r hidden sm:block ${
+      theme === 'dark' 
+        ? 'bg-dark-card border-dark-border' 
+        : 'bg-light-card border-light-border'
+    }`}>
+      <div className="h-full flex flex-col overflow-y-auto" style={{ paddingBottom: '16px' }}>
+        <nav className="flex-1 px-3 py-4">
+          {navigation.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`flex items-center px-4 py-3 my-1 text-sm font-medium rounded-xl transition-all duration-200 ${
+                  isActive 
+                    ? theme === 'dark'
+                      ? 'bg-zinc-800/80 border border-zinc-700 text-white'
+                      : 'bg-black text-white'
+                    : theme === 'dark'
+                      ? 'text-text-muted hover:bg-dark-darker hover:text-text-light'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+                style={{ height: '46px', display: 'flex', alignItems: 'center' }}
+              >
+                <item.icon className={`w-5 h-5 mr-3 ${
+                  isActive 
+                    ? 'text-white'
+                    : theme === 'dark' ? 'text-text-muted' : 'text-gray-500'
+                }`} />
+                <span className="whitespace-nowrap">{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+        
+        <div className="p-4 mt-auto">
+          <div className={`border-t pt-4 ${
+            theme === 'dark' ? 'border-dark-border' : 'border-light-border'
+          }`}>
+            <Link 
+              to="/profile"
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
+                theme === 'dark'
+                  ? 'text-text-muted hover:bg-dark-darker hover:text-text-light'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
+              style={{ height: '46px', display: 'flex', alignItems: 'center' }}
             >
-              <item.icon className={`w-5 h-5 mr-3 ${
-                isActive ? 'text-text-light' : 'text-gray-600 dark:text-text-muted'
-              }`} />
-              {item.name}
+              <User className="w-5 h-5 mr-3" />
+              <span className="whitespace-nowrap">Profile</span>
             </Link>
-          );
-        })}
-      </nav>
-      
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <div className="border-t border-light-border dark:border-dark-border pt-4">
-          <Link 
-            to="/profile"
-            className="flex items-center px-3 py-2.5 text-sm text-gray-600 dark:text-text-muted hover:bg-light-card dark:hover:bg-dark-card rounded-lg transition-colors duration-200"
-          >
-            <User className="w-5 h-5 mr-3" />
-            Profile
-          </Link>
+            
+            <button 
+              onClick={logout}
+              className={`w-full flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                theme === 'dark'
+                  ? 'text-red-400 hover:bg-red-900/20 hover:border-red-900/30'
+                  : 'text-red-600 hover:bg-red-50'
+              }`}
+              style={{ height: '46px', display: 'flex', alignItems: 'center' }}
+            >
+              <LogOut className="w-5 h-5 mr-3" />
+              <span className="whitespace-nowrap">Logout</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 

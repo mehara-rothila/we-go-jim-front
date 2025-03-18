@@ -7,7 +7,7 @@ import EditScheduleModal from '../components/workouts/EditScheduleModal';
 import api from '../services/api';
 
 const Workouts = () => {
-    const { isDark } = useTheme();
+    const { theme } = useTheme();
     const { schedules, loading, error, fetchSchedules, addSchedule } = useSchedules();
     const [searchTerm, setSearchTerm] = useState('');
     const [editingSchedule, setEditingSchedule] = useState(null);
@@ -82,59 +82,102 @@ const Workouts = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <Loader className="w-8 h-8 animate-spin text-blue-500" />
+            <div className={`flex justify-center items-center min-h-screen ${
+                theme === 'dark' ? 'bg-dark-bg' : 'bg-light-bg'
+            }`}>
+                <div className="text-center">
+                    <div className="relative inline-flex">
+                        <Loader className={`w-10 h-10 animate-spin ${
+                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                        }`} />
+                        <div className="absolute inset-0 h-full w-full flex items-center justify-center">
+                            <Calendar className={`w-5 h-5 ${
+                                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                            }`} />
+                        </div>
+                    </div>
+                    <p className={`text-lg mt-4 font-medium ${theme === 'dark' ? 'text-text-light' : 'text-gray-800'}`}>
+                        Loading your workout schedules...
+                    </p>
+                </div>
             </div>
         );
     }
 
-    if (error) {
-        return <div className="p-6 text-red-500">Error: {error}</div>;
-    }
-
     return (
-        <div className={`p-6 min-h-screen ${isDark ? 'bg-[#0f172a]' : 'bg-gray-50'}`}>
+        <div className={`p-6 min-h-screen ${theme === 'dark' ? 'bg-dark-bg' : 'bg-light-bg'} transition-colors duration-200`}>
             <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-4">
-                    <div>
-                        <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-1`}>
-                            Your Workout Schedules
-                        </h1>
-                        <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>
-                            Create and manage your workout routines
-                        </p>
+                {/* Header */}
+                <div className={`relative rounded-xl mb-8 overflow-hidden ${
+                    theme === 'dark' 
+                        ? 'bg-gradient-to-r from-zinc-900/50 to-zinc-800/50 border border-dark-border'
+                        : 'bg-gradient-to-r from-gray-50 to-zinc-50 border border-gray-200'
+                }`}>
+                    <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+                    <div className="relative p-6 z-10">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h1 className={`text-2xl font-bold mb-2 ${
+                                    theme === 'dark' ? 'text-text-light' : 'text-gray-900'
+                                }`}>
+                                    Your Workout Schedules
+                                </h1>
+                                <p className={`${
+                                    theme === 'dark' ? 'text-text-muted' : 'text-gray-600'
+                                }`}>
+                                    Create and manage your workout routines
+                                </p>
+                            </div>
+                            <button 
+                                onClick={handleAddSchedule}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium 
+                                    transition-all duration-200 shadow-sm ${
+                                    theme === 'dark' 
+                                        ? 'bg-zinc-800 text-white hover:bg-zinc-700' 
+                                        : 'bg-black text-white hover:bg-gray-800'
+                                }`}
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span>New Schedule</span>
+                            </button>
+                        </div>
                     </div>
-                    <button 
-                        onClick={handleAddSchedule}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium ${
-                            isDark 
-                                ? 'bg-white text-[#0f172a] hover:bg-gray-100' 
-                                : 'bg-black text-white hover:bg-gray-800'
-                        }`}
-                    >
-                        <Plus className="w-4 h-4" />
-                        New Schedule
-                    </button>
                 </div>
 
-                <div className="flex gap-4 mb-4">
+                {/* Error state */}
+                {error && (
+                    <div className={`p-5 rounded-xl mb-6 border ${
+                        theme === 'dark' 
+                            ? 'bg-red-900/20 border-red-800/30 text-red-400' 
+                            : 'bg-red-50 border-red-200 text-red-700'
+                    }`}>
+                        <p className="font-medium">Error: {error}</p>
+                        <p className="text-sm mt-1">Unable to load workout schedules.</p>
+                    </div>
+                )}
+
+                {/* Search Bar */}
+                <div className="flex gap-4 mb-6">
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${
+                            theme === 'dark' ? 'text-text-muted' : 'text-gray-400'
+                        }`} />
                         <input
                             type="text"
                             placeholder="Search schedules..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg ${
-                                isDark 
-                                    ? 'bg-[#1e293b] text-white placeholder-gray-400' 
-                                    : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-200'
+                            className={`w-full pl-10 pr-4 py-3 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 ${
+                                theme === 'dark' 
+                                    ? 'bg-dark-card border border-dark-border text-text-light placeholder-text-muted' 
+                                    : 'bg-white border border-gray-200 text-gray-900 placeholder-gray-400'
                             }`}
                         />
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Schedule Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {schedules
                         .filter(schedule => 
                             schedule.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -142,116 +185,179 @@ const Workouts = () => {
                         .map((schedule) => (
                             <div 
                                 key={schedule._id} 
-                                className={`rounded-xl p-4 ${
-                                    isDark ? 'bg-[#1e293b]' : 'bg-white border border-gray-200'
+                                className={`rounded-xl border transition-all duration-200 hover:shadow-md ${
+                                    theme === 'dark' 
+                                        ? 'bg-dark-card border-dark-border hover:border-gray-500/30' 
+                                        : 'bg-white border-gray-200 hover:border-gray-500/30'
                                 }`}
                             >
-                                <div className="flex items-center justify-between mb-4">
-                                    {editingName === schedule._id ? (
-                                        <input
-                                            type="text"
-                                            defaultValue={schedule.name}
-                                            onBlur={(e) => {
-                                                if (e.target.value !== schedule.name) {
-                                                    handleNameEdit(schedule._id, e.target.value);
-                                                }
-                                                setEditingName(null);
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    handleNameEdit(schedule._id, e.target.value);
-                                                } else if (e.key === 'Escape') {
+                                <div className="p-5">
+                                    <div className="flex items-center justify-between mb-4">
+                                        {editingName === schedule._id ? (
+                                            <input
+                                                type="text"
+                                                defaultValue={schedule.name}
+                                                onBlur={(e) => {
+                                                    if (e.target.value !== schedule.name) {
+                                                        handleNameEdit(schedule._id, e.target.value);
+                                                    }
                                                     setEditingName(null);
-                                                }
-                                            }}
-                                            className={`text-lg font-medium p-1 rounded w-full ${
-                                                isDark ? 'bg-[#0f172a] text-white' : 'bg-gray-50 text-gray-900'
-                                            } outline-none focus:ring-2 focus:ring-blue-500`}
-                                            autoFocus
-                                        />
-                                    ) : (
-                                        <h3 className={`text-lg font-medium ${
-                                            isDark ? 'text-white' : 'text-gray-900'
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleNameEdit(schedule._id, e.target.value);
+                                                    } else if (e.key === 'Escape') {
+                                                        setEditingName(null);
+                                                    }
+                                                }}
+                                                className={`text-lg font-medium p-2 rounded-lg w-full ${
+                                                    theme === 'dark' 
+                                                        ? 'bg-dark-darker border border-dark-border text-text-light' 
+                                                        : 'bg-gray-50 border border-gray-200 text-gray-900'
+                                                } outline-none focus:ring-2 focus:ring-gray-500`}
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <h3 className={`text-lg font-semibold ${
+                                                theme === 'dark' ? 'text-text-light' : 'text-gray-900'
+                                            }`}>
+                                                {schedule.name}
+                                            </h3>
+                                        )}
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => setEditingName(schedule._id)}
+                                                className={`p-2 rounded-lg ${
+                                                    theme === 'dark' 
+                                                        ? 'hover:bg-dark-darker text-text-muted hover:text-text-light' 
+                                                        : 'hover:bg-gray-100 text-gray-500 hover:text-gray-900'
+                                                } transition-colors`}
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(schedule._id)}
+                                                className={`p-2 rounded-lg ${
+                                                    theme === 'dark' 
+                                                        ? 'hover:bg-red-900/20 text-red-400 hover:text-red-300' 
+                                                        : 'hover:bg-red-50 text-red-500 hover:text-red-600'
+                                                } transition-colors`}
+                                            >
+                                                <Trash className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {schedule.workouts.map((workout, idx) => (
+                                            <div key={idx} className={`rounded-lg p-3 ${
+                                                theme === 'dark' ? 'bg-dark-darker' : 'bg-gray-50'
+                                            }`}>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className={`p-1.5 rounded-md ${
+                                                        theme === 'dark' ? 'bg-dark-card' : 'bg-white'
+                                                    }`}>
+                                                        <Calendar className={`w-4 h-4 ${
+                                                            theme === 'dark' ? 'text-text-muted' : 'text-gray-500'
+                                                        }`} />
+                                                    </div>
+                                                    <div className={`font-medium ${
+                                                        theme === 'dark' ? 'text-text-light' : 'text-gray-900'
+                                                    }`}>
+                                                        {workout.day}
+                                                    </div>
+                                                </div>
+                                                {workout.exercises.map((exercise, exerciseIdx) => (
+                                                    <div 
+                                                        key={exerciseIdx}
+                                                        className="ml-6 mb-2"
+                                                    >
+                                                        <div className={`${
+                                                            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                                                        } font-medium`}>
+                                                            • {exercise.exerciseName}
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2 ml-4 mt-1">
+                                                            {exercise.sets.map((set, setIdx) => (
+                                                                <div 
+                                                                    key={setIdx} 
+                                                                    className={`text-sm ${
+                                                                        theme === 'dark' ? 'text-text-muted' : 'text-gray-500'
+                                                                    }`}
+                                                                >
+                                                                    Set {set.setNumber}: {set.reps} reps
+                                                                    {set.weight > 0 && ` × ${set.weight} kg`}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-4 flex justify-between items-center pt-4 border-t border-opacity-30 border-gray-200">
+                                        <span className={`text-sm ${
+                                            theme === 'dark' ? 'text-text-muted' : 'text-gray-500'
                                         }`}>
-                                            {schedule.name}
-                                        </h3>
-                                    )}
-                                    <div className="flex items-center gap-2">
+                                            Created: {new Date(schedule.createdAt).toLocaleDateString()}
+                                        </span>
                                         <button
-                                            onClick={() => setEditingName(schedule._id)}
-                                            className={`p-2 rounded-lg ${
-                                                isDark ? 'hover:bg-[#0f172a]' : 'hover:bg-gray-100'
-                                            } transition-colors`}
+                                            onClick={() => setEditingSchedule(schedule)}
+                                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                                theme === 'dark' 
+                                                    ? 'bg-dark-darker text-gray-300 hover:bg-zinc-800' 
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
                                         >
-                                            <Edit2 className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(schedule._id)}
-                                            className={`p-2 rounded-lg ${
-                                                isDark ? 'hover:bg-[#0f172a]' : 'hover:bg-gray-100'
-                                            } transition-colors`}
-                                        >
-                                            <Trash className="w-4 h-4 text-red-500" />
+                                            Edit Workouts
                                         </button>
                                     </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {schedule.workouts.map((workout, idx) => (
-                                        <div key={idx}>
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <Calendar className={`w-4 h-4 ${
-                                                    isDark ? 'text-gray-400' : 'text-gray-500'
-                                                }`} />
-                                                <div className={`font-medium ${
-                                                    isDark ? 'text-white' : 'text-gray-900'
-                                                }`}>
-                                                    {workout.day}
-                                                </div>
-                                            </div>
-                                            {workout.exercises.map((exercise, exerciseIdx) => (
-                                                <div 
-                                                    key={exerciseIdx}
-                                                    className="ml-6 mb-2"
-                                                >
-                                                    <div className="text-blue-500">
-                                                        • {exercise.exerciseName}
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-2 ml-4">
-                                                        {exercise.sets.map((set, setIdx) => (
-                                                            <div 
-                                                                key={setIdx} 
-                                                                className={isDark ? 'text-gray-400' : 'text-gray-500'}
-                                                            >
-                                                                Set {set.setNumber}: {set.reps} reps
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-100">
-                                    <span className={`text-sm ${
-                                        isDark ? 'text-gray-400' : 'text-gray-500'
-                                    }`}>
-                                        Created: {new Date(schedule.createdAt).toLocaleDateString()}
-                                    </span>
-                                    <button
-                                        onClick={() => setEditingSchedule(schedule)}
-                                        className="text-blue-500 hover:text-blue-600"
-                                    >
-                                        Edit
-                                    </button>
                                 </div>
                             </div>
                         ))}
                 </div>
+
+                {/* Empty state */}
+                {!loading && !error && schedules.length === 0 && (
+                    <div className={`text-center p-12 rounded-xl border ${
+                        theme === 'dark' 
+                            ? 'bg-dark-card border-dark-border' 
+                            : 'bg-white border-gray-200'
+                    }`}>
+                        <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+                            theme === 'dark' ? 'bg-dark-darker' : 'bg-gray-100'
+                        }`}>
+                            <Calendar className={`w-8 h-8 ${theme === 'dark' ? 'text-text-muted' : 'text-gray-400'}`} />
+                        </div>
+                        <h3 className={`text-xl font-semibold mb-2 ${
+                            theme === 'dark' ? 'text-text-light' : 'text-gray-900'
+                        }`}>No workout schedules yet</h3>
+                        <p className={`max-w-md mx-auto mb-6 ${
+                            theme === 'dark' ? 'text-text-muted' : 'text-gray-500'
+                        }`}>
+                            Create your first workout schedule to start planning your fitness routine
+                        </p>
+                        <button 
+                            onClick={handleAddSchedule}
+                            className={`px-6 py-3 rounded-xl font-medium 
+                                transition-all duration-200 ${
+                                theme === 'dark' 
+                                    ? 'bg-zinc-800 text-white hover:bg-zinc-700' 
+                                    : 'bg-black text-white hover:bg-gray-800'
+                            }`}
+                        >
+                            <span className="flex items-center gap-2">
+                                <Plus className="w-4 h-4" />
+                                Create First Schedule
+                            </span>
+                        </button>
+                    </div>
+                )}
             </div>
 
+            {/* Edit Schedule Modal */}
             {editingSchedule && (
                 <EditScheduleModal
                     schedule={editingSchedule}
